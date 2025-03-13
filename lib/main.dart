@@ -1,21 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:weighted_auto_complete_search/core/DI/dependency_injector.dart';
+import 'package:weighted_auto_complete_search/data/data_sources/local/local_user_cache.dart';
+import 'package:weighted_auto_complete_search/presentation/screens/search/search_screen.dart';
 import 'package:weighted_auto_complete_search/utils/constants/app_constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:weighted_auto_complete_search/utils/observers/app_bloc_observer.dart';
-import 'package:weighted_auto_complete_search/utils/observers/logger_navigator_observer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-void main() async{
+import 'package:hive_flutter/hive_flutter.dart';
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    Bloc.observer = AppBlocObserver();
-  } catch (e) {
-    Fluttertoast.showToast(
-      msg: e.toString(),
-      toastLength: Toast.LENGTH_LONG,
-    );
-  }
+  Bloc.observer = AppBlocObserver();
+  await Hive.initFlutter();
+  await DependencyInjector().injectModules();
+  await diInstance.get<LocalUserCache>().initHive();
   runApp(const MyApp());
 }
 
@@ -23,7 +21,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return  ScreenUtilInit(
+    return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
       builder: (BuildContext context, Widget? child) => MaterialApp(
@@ -41,16 +39,14 @@ class MyApp extends StatelessWidget {
         scrollBehavior: const ScrollBehavior().copyWith(
           physics: const BouncingScrollPhysics(),
         ),
-        navigatorObservers: <NavigatorObserver>[
-          LoggerNavigatorObserver(),
-        ],
         title: AppConstants.appTitle,
+        home: const MyHomePage(),
         theme: ThemeData(
           brightness: Brightness.light,
           primaryColor: Colors.blue,
           hintColor: Colors.deepPurple,
           scaffoldBackgroundColor: Colors.white,
-          appBarTheme:  AppBarTheme(
+          appBarTheme: AppBarTheme(
             color: Colors.blue,
             elevation: 0,
             iconTheme: const IconThemeData(color: Colors.white),
@@ -59,13 +55,76 @@ class MyApp extends StatelessWidget {
               fontSize: 22.sp,
               fontWeight: FontWeight.bold,
             ),
-          ), colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(background: Colors.white),
+          ),
+          colorScheme:
+              ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(
+            surface: Colors.white,
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            hintStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: Colors.grey,
+            ),
+            border: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Colors.blue,
+              ),
+              borderRadius: BorderRadius.circular(
+                12.r,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Colors.blue,
+              ),
+              borderRadius: BorderRadius.circular(
+                12.r,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Colors.blue,
+              ),
+              borderRadius: BorderRadius.circular(
+                12.r,
+              ),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Colors.blue,
+              ),
+              borderRadius: BorderRadius.circular(
+                12.r,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Colors.red,
+              ),
+              borderRadius: BorderRadius.circular(
+                12.r,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Colors.red,
+              ),
+              borderRadius: BorderRadius.circular(
+                12.r,
+              ),
+            ),
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 12.0.w,
+              vertical: 12.0.h,
+            ),
+            errorMaxLines: 3,
+          ),
         ),
-        home: const MyHomePage(),
       ),
     );
   }
 }
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
     super.key,
@@ -76,16 +135,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          AppConstants.appTitle,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.white,
-              ),
-        ),
-      ),
-      body: const SizedBox.shrink(),
-    );
+    return const SearchScreen();
   }
 }
