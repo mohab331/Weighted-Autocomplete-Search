@@ -41,12 +41,6 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
       ),
       child: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
-          if (state.hasError) {
-            return ErrorStateWidget(
-              errorMessage: state.errorModel?.errorMessage,
-              onRetry: ()=> searchCubit.searchUsers(query: _searchController.text),
-            );
-          }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -64,7 +58,12 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                 ),
               ),
               SizedBox(height: 16.h),
-              if (state.isLoaded && (state.usersList?.isEmpty ?? true))
+              if (state.hasError)
+               ErrorStateWidget(
+              errorMessage: state.errorModel?.errorMessage,
+              onRetry: ()=> searchCubit.searchUsers(query: _searchController.text),
+              )
+              else if (state.isLoaded && (state.usersList?.isEmpty ?? true))
                 const EmptyStateWidget(
                   message: 'No users found.',
                 )

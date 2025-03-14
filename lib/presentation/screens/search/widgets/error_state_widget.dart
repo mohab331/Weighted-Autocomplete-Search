@@ -20,7 +20,7 @@ class ErrorStateWidget extends StatelessWidget {
           Icon(
             Icons.error_outline_rounded,
             color: Colors.red.shade600,
-            size: 95.r,
+            size: 70.r,
           ),
           SizedBox(
             height: 5.h,
@@ -41,8 +41,8 @@ class ErrorStateWidget extends StatelessWidget {
               height: 20.h,
             ),
             SizedBox(
-              width: double.infinity,
-              height: 45.h,
+              width: MediaQuery.sizeOf(context).width * 0.5,
+              height: 40.h,
               child: ElevatedButton(
                 onPressed: onRetry,
                 style: ElevatedButton.styleFrom(
