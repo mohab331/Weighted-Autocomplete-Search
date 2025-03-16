@@ -3,6 +3,8 @@
 ## Overview
 This project follows the **Modern Android App Architecture** as outlined by [Google](https://developer.android.com/courses/pathways/android-architecture). It is built using **Flutter** and **Cubit** for state management, ensuring a clean separation of concerns and efficient state handling.
 
+** Search starts after first 3 characters.**
+
 ---
 
 ## 📌 Architecture & State Management
